@@ -14,7 +14,7 @@ import {
   Plus,
   MapPin,
 } from "lucide-react"
-import { products } from "@/lib/mock-data"
+import { products } from "@/lib/products-data"
 import { ProductGallery } from "@/components/product-gallery"
 import { ProductCard } from "@/components/product-card"
 
@@ -32,7 +32,7 @@ export default function ProductPage() {
     .filter((p) => p.collection === product.collection && p.id !== product.id)
     .slice(0, 4)
 
-  const totalStock = product.stock_yanino + product.stock_factory
+  const totalStock = (product.stock_yanino || 0) + (product.stock_factory || 0)
   const hasDiscount = product.price_official && product.price_official > product.price_retail
 
   const tabs: { id: TabId; label: string }[] = [
@@ -81,7 +81,7 @@ export default function ProductPage() {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Gallery */}
           <div className="lg:w-1/2">
-            <ProductGallery images={product.images} name={product.name} />
+            <ProductGallery images={product.images || []} name={product.name} />
           </div>
 
           {/* Product info */}
@@ -138,13 +138,13 @@ export default function ProductPage() {
               </div>
               {totalStock > 0 && (
                 <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">
-                  {product.stock_yanino > 0 && (
+                  {(product.stock_yanino || 0) > 0 && (
                     <div className="flex items-center gap-2">
                       <MapPin className="h-3.5 w-3.5" />
                       <span>Склад Янино: {product.stock_yanino} м²</span>
                     </div>
                   )}
-                  {product.stock_factory > 0 && (
+                  {(product.stock_factory || 0) > 0 && (
                     <div className="flex items-center gap-2">
                       <Package className="h-3.5 w-3.5" />
                       <span>Завод: {product.stock_factory} м²</span>
@@ -252,16 +252,18 @@ export default function ProductPage() {
             {activeTab === "description" && (
               <div className="max-w-3xl">
                 <p className="text-foreground/80 leading-relaxed">{product.description}</p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {product.rooms.map((room) => (
-                    <span
-                      key={room}
-                      className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
-                    >
-                      {room}
-                    </span>
-                  ))}
-                </div>
+                {product.rooms && product.rooms.length > 0 && (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {product.rooms.map((room) => (
+                      <span
+                        key={room}
+                        className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
+                      >
+                        {room}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
