@@ -6,17 +6,29 @@ import csv
 import os
 import json
 import re
+import sys
 from pathlib import Path
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 import time
 
-# Пути
-PROJECT_ROOT = Path(os.getcwd())
-CSV_FILE = PROJECT_ROOT / 'scripts' / 'cersanit-products.csv'
+# Пути - используем абсолютные пути для работы в контейнере
+PROJECT_ROOT = Path('/vercel/share/v0-project')
+CSV_FILE = PROJECT_ROOT / 'scripts' / 'products.csv'
 IMAGES_DIR = PROJECT_ROOT / 'public' / 'images' / 'products'
 LIB_DIR = PROJECT_ROOT / 'lib'
 OUTPUT_FILE = LIB_DIR / 'imported-products.ts'
+
+# Проверяем существование CSV
+if not CSV_FILE.exists():
+    print(f"❌ Файл не найден: {CSV_FILE}")
+    print(f"Текущая директория: {os.getcwd()}")
+    print(f"Содержимое scripts/:")
+    scripts_dir = PROJECT_ROOT / 'scripts'
+    if scripts_dir.exists():
+        for f in scripts_dir.iterdir():
+            print(f"  - {f.name}")
+    sys.exit(1)
 
 # Создаём директории
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
