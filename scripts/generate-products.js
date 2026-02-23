@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read and parse CSV
-const csvPath = path.join(__dirname, 'products.csv');
+// Use absolute paths for container environment
+const projectRoot = '/vercel/share/v0-project';
+const csvPath = path.join(projectRoot, 'scripts', 'products.csv');
 const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
 const lines = csvContent.split('\n').filter(line => line.trim());
@@ -164,7 +165,14 @@ export function getCollections(): string[] {
 `;
 
 // Write to lib directory
-const outputPath = path.join(__dirname, '..', 'lib', 'products-data.ts');
+const outputPath = path.join(projectRoot, 'lib', 'products-data.ts');
+
+// Create lib directory if it doesn't exist
+const libDir = path.join(projectRoot, 'lib');
+if (!fs.existsSync(libDir)) {
+  fs.mkdirSync(libDir, { recursive: true });
+}
+
 fs.writeFileSync(outputPath, tsContent, 'utf-8');
 
 console.log(`✅ Successfully generated ${outputPath}`);
