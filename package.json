@@ -7,7 +7,8 @@
     "scripts": {
         "dev": "next dev --turbopack",
         "build": "next build",
-        "start": "next start"
+        "start": "next start",
+        "import:products": "node scripts/import-products-from-sheets.mjs"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.0.0",
