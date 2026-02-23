@@ -28,6 +28,7 @@ function CatalogContent() {
   const searchParams = useSearchParams()
   const collectionSlug = searchParams.get("collection")
   const productType = searchParams.get("product_type")
+  const searchQuery = searchParams.get("search") || ""
 
   const initialFilters = useMemo((): Record<string, string[]> => {
     const filters: Record<string, string[]> = {}
@@ -93,6 +94,16 @@ function CatalogContent() {
   const filteredProducts = useMemo(() => {
     let result = [...products]
 
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      result = result.filter((p) =>
+        p.name.toLowerCase().includes(query) ||
+        p.collection.toLowerCase().includes(query) ||
+        p.product_type.toLowerCase().includes(query)
+      )
+    }
+
     // Apply filters
     Object.entries(activeFilters).forEach(([key, values]) => {
       if (values.length === 0) return
@@ -133,7 +144,7 @@ function CatalogContent() {
     }
 
     return result
-  }, [activeFilters, priceRange, sort])
+  }, [searchQuery, activeFilters, priceRange, sort])
 
   const totalActiveFilters = Object.values(activeFilters).flat().length
 
@@ -156,7 +167,9 @@ function CatalogContent() {
         {/* Title + Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Каталог плитки</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+              {searchQuery ? `Поиск: "${searchQuery}"` : "Каталог плитки"}
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {filteredProducts.length} товаров
             </p>
