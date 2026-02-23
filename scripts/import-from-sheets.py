@@ -16,7 +16,7 @@ SHEET_ID = '1uBg2NMNzF4GzNPSVzVO7N4vnllDfCihapIzsJwntDrE'
 CSV_URL = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid=0'
 
 # Пути
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(os.getcwd())
 IMAGES_DIR = PROJECT_ROOT / 'public' / 'images' / 'products'
 LIB_DIR = PROJECT_ROOT / 'lib'
 OUTPUT_FILE = LIB_DIR / 'imported-products.ts'
