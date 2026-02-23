@@ -9,11 +9,15 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?forma
 
 // Директории
 const IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'products');
-const OUTPUT_FILE = path.join(process.cwd(), 'lib', 'imported-products.ts');
+const LIB_DIR = path.join(process.cwd(), 'lib');
+const OUTPUT_FILE = path.join(LIB_DIR, 'imported-products.ts');
 
-// Создаём директорию для изображений
+// Создаём директории
 if (!fs.existsSync(IMAGES_DIR)) {
   fs.mkdirSync(IMAGES_DIR, { recursive: true });
+}
+if (!fs.existsSync(LIB_DIR)) {
+  fs.mkdirSync(LIB_DIR, { recursive: true });
 }
 
 // Функция для скачивания файла
@@ -49,21 +53,54 @@ function downloadFile(url, filepath) {
   });
 }
 
-// Функция для парсинга CSV
+// Функция для парсинга CSV с учетом кавычек
 function parseCSV(text) {
   const lines = text.split('\n').filter(line => line.trim());
   if (lines.length === 0) return [];
   
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+  // Функция для разбора строки CSV с учетом кавычек
+  function parseLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      const nextChar = line[i + 1];
+      
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Двойная кавычка внутри кавычек
+          current += '"';
+          i++;
+        } else {
+          // Переключаем режим кавычек
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        // Разделитель вне кавычек
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  }
+  
+  const headers = parseLine(lines[0]);
   const rows = [];
   
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+    const values = parseLine(lines[i]);
     const row = {};
     headers.forEach((header, index) => {
       row[header] = values[index] || '';
     });
-    rows.push(row);
+    if (Object.keys(row).length > 0) {
+      rows.push(row);
+    }
   }
   
   return rows;
