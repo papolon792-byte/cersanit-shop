@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read CSV from read-only context
-const csvPath = path.join(__dirname, '..', 'user_read_only_context', 'text_attachments', 'ИМ_2D_заливочный_файл_Cersanit_22_09_2025_2---Лист1-L4piz.csv');
+// Read CSV from scripts directory - use absolute path for container environment
+const csvPath = '/vercel/share/v0-project/scripts/products-import.csv';
 const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
 // Parse CSV with proper quote handling
@@ -184,8 +184,15 @@ export interface Product {
 export const products: Product[] = ${JSON.stringify(products, null, 2)};
 `;
 
-// Write to lib/products-data.ts
-const outputPath = path.join(__dirname, '..', 'lib', 'products-data.ts');
+// Write to lib/products-data.ts - use absolute path
+const outputPath = '/vercel/share/v0-project/lib/products-data.ts';
+
+// Create lib directory if it doesn't exist
+const libDir = '/vercel/share/v0-project/lib';
+if (!fs.existsSync(libDir)) {
+  fs.mkdirSync(libDir, { recursive: true });
+}
+
 fs.writeFileSync(outputPath, tsContent, 'utf-8');
 
 console.log(`✅ Successfully imported ${products.length} products to lib/products-data.ts`);
