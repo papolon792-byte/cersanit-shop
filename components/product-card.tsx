@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart } from "lucide-react"
-import type { Product } from "@/lib/mock-data"
+import type { Product } from "@/lib/products-data"
 
 interface ProductCardProps {
   product: Product
@@ -14,18 +14,18 @@ interface ProductCardProps {
 export function ProductCard({ product, priority = false }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false)
 
-  const totalStock = product.stock_yanino + product.stock_factory
+  const totalStock = (product.stock_yanino || 0) + (product.stock_factory || 0)
   const hasDiscount = product.price_official && product.price_official > product.price_retail
 
   return (
     <Link
-      href={`/catalog/${product.slug}`}
+      href={`/catalog/${product.slug || product.id}`}
       className="group flex flex-col bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300"
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-white">
         <Image
-          src={product.main_image}
+          src={product.main_image || product.image || "/placeholder-tile.jpg"}
           alt={product.name}
           fill
           className="object-contain p-3 transition-transform duration-300 group-hover:scale-105"

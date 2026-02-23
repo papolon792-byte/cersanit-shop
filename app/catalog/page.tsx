@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { SlidersHorizontal, ChevronRight, Grid3X3, LayoutGrid } from "lucide-react"
-import { products, collections } from "@/lib/mock-data"
+import { products } from "@/lib/products-data"
+import { collections } from "@/lib/mock-data"
 import { filterOptions } from "@/lib/filter-options"
 import { ProductCard } from "@/components/product-card"
 import { CatalogFilters, MobileFilterDrawer } from "@/components/catalog-filters"
@@ -140,7 +141,11 @@ function CatalogContent() {
         result.sort((a, b) => a.name.localeCompare(b.name))
         break
       default:
-        result.sort((a, b) => (b.rating * b.reviews_count) - (a.rating * a.reviews_count))
+        result.sort((a, b) => {
+          const aScore = (a.rating || 0) * (a.reviews_count || 0)
+          const bScore = (b.rating || 0) * (b.reviews_count || 0)
+          return bScore - aScore
+        })
     }
 
     return result
