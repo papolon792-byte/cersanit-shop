@@ -4,8 +4,7 @@ import { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ChevronDown, ChevronRight, SlidersHorizontal, X } from "lucide-react"
-import { products } from "@/lib/products-data"
-import { collections } from "@/lib/mock-data"
+import { collections, products } from "@/lib/mock-data"
 
 /* ---------- derived data ---------- */
 console.log("[v0] Collections data:", collections.length, "collections found")

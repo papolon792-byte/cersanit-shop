@@ -280,12 +280,8 @@ function CatalogContent() {
                   gridCols === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
                 }`}
               >
-                {filteredProducts.map((product, index) => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    priority={index < 6}
-                  />
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (

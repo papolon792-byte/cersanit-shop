@@ -1,8 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Truck, ShieldCheck, Award, ChevronRight } from "lucide-react"
-import { products } from "@/lib/products-data"
-import { categories, collections } from "@/lib/mock-data"
+import { categories, collections, products } from "@/lib/mock-data"
 import { ProductCard } from "@/components/product-card"
 
 export default function HomePage() {
