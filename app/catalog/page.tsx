@@ -141,7 +141,11 @@ function CatalogContent() {
         result.sort((a, b) => a.name.localeCompare(b.name))
         break
       default:
-        result.sort((a, b) => (b.rating * b.reviews_count) - (a.rating * a.reviews_count))
+        result.sort((a, b) => {
+          const aScore = (a.rating || 0) * (a.reviews_count || 0)
+          const bScore = (b.rating || 0) * (b.reviews_count || 0)
+          return bScore - aScore
+        })
     }
 
     return result
