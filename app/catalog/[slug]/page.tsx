@@ -42,19 +42,20 @@ export default function ProductPage() {
   ]
 
   const specifications = [
+    { label: "Артикул", value: product.sku },
+    { label: "Бренд", value: product.brand },
     { label: "Коллекция", value: product.collection },
-    { label: "Ширина, см", value: product.format?.split('x')[0] },
-    { label: "Длина, см", value: product.format?.split('x')[1] },
-    { label: "Цвет", value: product.color },
-    { label: "Формат плитки, см", value: product.format },
-    { label: "Материал", value: product.material_type },
+    { label: "Тип", value: product.product_type },
+    { label: "Формат", value: product.format },
     { label: "Поверхность", value: product.surface },
+    { label: "Цвет", value: product.color },
+    { label: "Материал", value: product.material_type },
     { label: "Назначение", value: product.application },
-    { label: "Толщина", value: product.thickness || "-" },
-    { label: "Штук в коробке", value: product.pieces_per_box ? String(product.pieces_per_box) : "-" },
-    { label: "М² в коробке", value: product.sqm_per_box ? String(product.sqm_per_box) : "-" },
-    { label: "Страна производства", value: product.country },
-  ].filter(spec => spec.value && spec.value !== "-" && spec.value !== "undefined")
+    { label: "Толщина", value: product.thickness },
+    { label: "Штук в коробке", value: String(product.pieces_per_box) },
+    { label: "М\u00B2 в коробке", value: String(product.sqm_per_box) },
+    { label: "Страна", value: product.country },
+  ]
 
   return (
     <div className="bg-muted/30 min-h-screen">
@@ -85,21 +86,34 @@ export default function ProductPage() {
 
           {/* Product info */}
           <div className="lg:w-1/2 flex flex-col gap-5">
+            {/* Badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {product.is_new && (
+                <span className="px-2.5 py-0.5 rounded-md bg-primary text-primary-foreground text-xs font-medium">
+                  Новинка
+                </span>
+              )}
+              {product.is_bestseller && (
+                <span className="px-2.5 py-0.5 rounded-md bg-amber-500 text-foreground text-xs font-medium">
+                  Хит продаж
+                </span>
+              )}
+              {product.is_discount && (
+                <span className="px-2.5 py-0.5 rounded-md bg-destructive text-destructive-foreground text-xs font-medium">
+                  Скидка
+                </span>
+              )}
+            </div>
+
             {/* Name */}
             <div>
-              <h1 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-foreground text-balance leading-tight">
+              <p className="text-sm text-muted-foreground mb-1">
+                {product.brand} / {product.collection}
+              </p>
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground text-balance">
                 {product.name}
               </h1>
-              <div className="flex items-center gap-3 mt-3 flex-wrap">
-                <p className="text-sm text-muted-foreground">
-                  Артикул: <span className="font-medium text-foreground">{product.sku}</span>
-                </p>
-                {product.is_new && (
-                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-semibold uppercase">
-                    Новинка
-                  </span>
-                )}
-              </div>
+              <p className="text-sm text-muted-foreground mt-1">Арт. {product.sku}</p>
             </div>
 
             {/* Price */}
