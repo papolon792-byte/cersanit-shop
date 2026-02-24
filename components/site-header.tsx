@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, KeyboardEvent } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Search, Heart, ShoppingCart, Menu, X, Phone } from "lucide-react"
 import { Logo } from "./logo"
 
@@ -14,8 +15,24 @@ const navLinks = [
 ]
 
 export function SiteHeader() {
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/catalog?search=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchOpen(false)
+      setSearchQuery("")
+    }
+  }
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border">
@@ -59,10 +76,19 @@ export function SiteHeader() {
           <div className={`${searchOpen ? "flex" : "hidden"} lg:flex items-center relative`}>
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               placeholder="Поиск плитки..."
               className="h-9 w-48 xl:w-64 rounded-lg border border-input bg-muted/50 px-3 pr-9 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all"
             />
-            <Search className="absolute right-2.5 h-4 w-4 text-muted-foreground" />
+            <button
+              onClick={handleSearch}
+              className="absolute right-2.5 hover:opacity-70 transition-opacity"
+              aria-label="Искать"
+            >
+              <Search className="h-4 w-4 text-muted-foreground" />
+            </button>
           </div>
           <button
             onClick={() => setSearchOpen(!searchOpen)}

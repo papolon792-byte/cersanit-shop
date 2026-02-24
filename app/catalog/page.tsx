@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { SlidersHorizontal, ChevronRight, Grid3X3, LayoutGrid } from "lucide-react"
-import { products, collections } from "@/lib/mock-data"
+import { products } from "@/lib/products-data"
+import { collections } from "@/lib/mock-data"
 import { filterOptions } from "@/lib/filter-options"
 import { ProductCard } from "@/components/product-card"
 import { CatalogFilters, MobileFilterDrawer } from "@/components/catalog-filters"
@@ -28,6 +29,7 @@ function CatalogContent() {
   const searchParams = useSearchParams()
   const collectionSlug = searchParams.get("collection")
   const productType = searchParams.get("product_type")
+  const searchQuery = searchParams.get("search") || ""
 
   const initialFilters = useMemo((): Record<string, string[]> => {
     const filters: Record<string, string[]> = {}
@@ -93,6 +95,16 @@ function CatalogContent() {
   const filteredProducts = useMemo(() => {
     let result = [...products]
 
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      result = result.filter((p) =>
+        p.name.toLowerCase().includes(query) ||
+        p.collection.toLowerCase().includes(query) ||
+        p.product_type.toLowerCase().includes(query)
+      )
+    }
+
     // Apply filters
     Object.entries(activeFilters).forEach(([key, values]) => {
       if (values.length === 0) return
@@ -129,11 +141,15 @@ function CatalogContent() {
         result.sort((a, b) => a.name.localeCompare(b.name))
         break
       default:
-        result.sort((a, b) => (b.rating * b.reviews_count) - (a.rating * a.reviews_count))
+        result.sort((a, b) => {
+          const aScore = (a.rating || 0) * (a.reviews_count || 0)
+          const bScore = (b.rating || 0) * (b.reviews_count || 0)
+          return bScore - aScore
+        })
     }
 
     return result
-  }, [activeFilters, priceRange, sort])
+  }, [searchQuery, activeFilters, priceRange, sort])
 
   const totalActiveFilters = Object.values(activeFilters).flat().length
 
@@ -156,7 +172,9 @@ function CatalogContent() {
         {/* Title + Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Каталог плитки</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+              {searchQuery ? `Поиск: "${searchQuery}"` : "Каталог плитки"}
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {filteredProducts.length} товаров
             </p>
